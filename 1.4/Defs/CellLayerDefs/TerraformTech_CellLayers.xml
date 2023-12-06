@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+	<CellAutomato.CellLayerDef> 
+		<defName>Terrain</defName>
+	</CellAutomato.CellLayerDef>
+	
+	<CellAutomato.CellLayerDef> 
+		<defName>Plant</defName>
+	</CellAutomato.CellLayerDef> 
+	
+	<CellAutomato.CellLayerDef> 
+		<defName>Filth</defName>
+	</CellAutomato.CellLayerDef>
+	
+	<CellAutomato.CellLayerDef> 
+		<defName>Building</defName>
+	</CellAutomato.CellLayerDef>
+	
+</Defs>

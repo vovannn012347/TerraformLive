@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	
+	<!-- Mud-->
+	<!-- create rule: mud expand rule - expands in sufficient moist -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MudExpandRule</defName>
+		<priority>100</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>15000~20000</time><!-- 6-8 hours -->
+		<conditions>
+			<li Class="CellAutomato.PlantChecker">
+				<patchTag>PlantChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>500~100000</valueRange>
+				<!-- possible values checked: -->
+				<swampinessMult>500</swampinessMult><!-- swampiness range is 0.0~1.0, multiplied by 1000 -->
+				<pollutionMult>0</pollutionMult><!-- pollution range is 0.0~1.0 -->
+				<avgTempMult>0</avgTempMult><!-- celsius -->
+				<elevationMult>0</elevationMult><!-- meters above sea height -->
+				<rainfallMult>0.5</rainfallMult><!-- rain milimeters -->
+				<!-- values from world tile are multiplied and summarized -->
+				<!-- and then are modified by following value modifiers in listed order -->
+				<valueModifiers>
+					<!-- evaluated in list order -->
+					<li Class="CellAutomato.WeatherModfier">
+						<!-- applies in order: first wind then rainfall then temperature-->
+						<!-- wind does not affect indoors and rain does not affect roofed areas -->
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Mud</li>
+							<li>WaterShallow</li>
+							<li>WaterOceanShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterOceanDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>2.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterShallow</li>
+							<li>WaterOceanShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterOceanDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			
+				<!--li Class="CellAutomato.TerrainDistanceChecker">
+					<patchTag>TerrainDistanceChecker1</patchTag>
+					<success>Normal</success>
+					<terrainDefs>
+						<li>Mud</li>
+						<li>WaterShallow</li>
+						<li>WaterOceanShallow</li>
+						<li>WaterDeep</li>
+						<li>WaterOceanDeep</li>
+						<li>WaterMovingShallow</li>
+						<li>WaterMovingChestDeep</li>
+					</terrainDefs>
+					<range>1.5</range>
+				</li>
+				<li Class="CellAutomato.TerrainDistanceChecker">
+					<patchTag>TerrainDistanceChecker2</patchTag>
+					<success>Normal</success>
+					<terrainDefs>
+						<li>WaterShallow</li>
+						<li>WaterOceanShallow</li>
+						<li>WaterDeep</li>
+						<li>WaterOceanDeep</li>
+						<li>WaterMovingShallow</li>
+						<li>WaterMovingChestDeep</li>
+					</terrainDefs>
+					<range>2.5</range>
+				</li-->
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Mud</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- die rule: mud - dies in sufficient heat -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MudDieRule</defName>
+		<priority>100</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>15000~20000</time><!-- 6-8 hours -->
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-100000~200</valueRange>
+				<!-- possible values checked: -->
+				<swampinessMult>500</swampinessMult><!-- swampiness range is 0.0~1.0 -->
+				<pollutionMult>0</pollutionMult><!-- pollution range is 0.0~1.0 -->
+				<avgTempMult>0</avgTempMult><!-- celsius -->
+				<elevationMult>0</elevationMult><!-- meters above sea height -->
+				<rainfallMult>0.5</rainfallMult><!-- rain milimeters -->
+				<!-- values from world tile are multiplied and summarized -->
+				<!-- and then are modified by following value modifiers in listed order -->
+				<valueModifiers>
+					<!-- evaluated in list order -->
+					<li Class="CellAutomato.WeatherModfier">
+						<!-- applies in order: first wind then rainfall then temperature-->
+						<!-- wind does not affect indoors and rain does not affect roofed areas -->
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker Class="CellAutomato.RadiusChecker">
+			<patchTag>RadiusChecker1</patchTag>
+			<success>Invert</success>
+			<mode>Single</mode>
+			<range>1.5</range>
+			<checker Class="CellAutomato.TerrainChecker">
+				<patchTag>TerrainChecker1</patchTag>
+				<terrainDefs>
+					<li>Mud</li>
+					<li>WaterShallow</li>
+					<li>WaterDeep</li>
+					<li>WaterOceanShallow</li>
+					<li>WaterOceanDeep</li>
+					<li>WaterMovingShallow</li>
+					<li>WaterMovingChestDeep</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>SoilRich</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- water shallow -->
+	<!-- Expand rule: water shallow 1-range, non-wet areas -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterShallowExpandRuleDry</defName>
+		<priority>110</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+				<li>Sand</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>1250~2500</time><!-- 0.5-1 hours -->
+		<conditions>
+			<li Class="CellAutomato.TreeOnTopChecker">
+				<patchTag>TreeOnTopChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusChecker">
+			<patchTag>RadiusChecker1</patchTag>
+			<success>Normal</success>
+			<mode>Single</mode>
+			<range>1.5</range>
+			<checker Class="CellAutomato.TerrainChecker">
+				<patchTag>TerrainChecker1</patchTag>
+				<terrainDefs>
+					<li>WaterDeep</li>
+					<li>WaterMovingShallow</li>
+					<li>WaterMovingChestDeep</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>WaterShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Mud</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Expand rule: water shallow 3-range, moderate wet areas -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterShallowExpandRule</defName>
+		<priority>110</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+				<li>Sand</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>1250~2500</time><!-- 0.5-1 hours -->
+		<conditions>
+			<li Class="CellAutomato.TreeOnTopChecker">
+				<patchTag>TreeOnTopChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>1200~5000</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<patchTag>TerrainChecker1</patchTag>
+						<terrainDefs>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<patchTag>TerrainChecker1</patchTag>
+						<terrainDefs>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainPlaceOnTopAction">
+				<patchTag>TerrainPlaceOnTopAction1</patchTag>
+				<preferredResultTerrainDef>WaterShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Mud</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Expand rule: water shallow 1-range, rain world -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterShallowExpandRuleExtreme</defName>
+		<priority>110</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+				<li>Sand</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>2500~5000</time><!-- 1-2 hours -->
+		<conditions>
+			<li Class="CellAutomato.TreeOnTopChecker">
+				<patchTag>TreeOnTopChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>5000~1000000</valueRange>
+				<swampinessMult>1000</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>1</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker Class="CellAutomato.RadiusChecker">
+			<patchTag>RadiusChecker1</patchTag>
+			<success>Normal</success>
+			<mode>Single</mode>
+			<range>1.5</range>
+			<checker Class="CellAutomato.TerrainChecker">
+				<patchTag>TerrainChecker1</patchTag>
+				<terrainDefs>
+					<li>WaterShallow</li>
+					<li>WaterDeep</li>
+					<li>WaterMovingShallow</li>
+					<li>WaterMovingChestDeep</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>WaterShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Mud</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Die rule: water shallow 1-range, dry area -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterShallowDieRuleDry</defName>
+		<priority>110</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>WaterShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>5000~10000</time><!-- 2-4 hours -->
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-100000~1200</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>		
+		<checker>
+			<!-- not water around and not water source around - dry out -->
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<!-- any [not water] tile in range of 1.5 tiles -->
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<patchTag>TerrainChecker1</patchTag>
+						<success>Invert</success>
+						<terrainDefs>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<!-- any [not water] tile in range of 1.5 tiles -->
+					<success>Invert</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<patchTag>TerrainChecker1</patchTag>
+						<terrainDefs>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>Mud</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Die rule: water shallow 1-range, moderate wet area -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterShallowDieRule</defName>
+		<priority>110</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>WaterShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>5000~10000</time><!-- 2-4 hours -->
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>1200~5000</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>		
+		<checker>
+			<!-- not water around and not water source around - dry out -->
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<!-- any [not water] tile in range of 1.5 tiles -->
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<success>Invert</success>
+						<terrainDefs>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<!-- not [water source] tile in range of 2.5 tiles -->
+					<success>Invert</success>
+					<mode>Single</mode>
+					<range>2.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>Mud</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	<!-- water shallow dry rules -->
+	
+	<!-- Ocean water spread rule -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterOceanShallowExpandRule</defName>
+		<priority>120</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+				<li>Sand</li>
+				<li>SoftSand</li>
+				<li>Gravel</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>1050~1750</time>
+		<conditions>
+			<li Class="CellAutomato.TreeOnTopChecker">
+				<patchTag>TreeOnTopChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>0~250</valueRange>
+				<swampinessMult>0</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 0)</li>
+									<li>(0.1, 100)</li>
+									<li>(0.5, 600)</li>
+									<li>(1.0, 1200)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterOceanShallow</li>
+							<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+						<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>WaterOceanShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Sand</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Ocean water flux rule -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterOceanShallowFluxRule</defName>
+		<priority>120</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Mud</li>
+				<li>Sand</li>
+				<li>SoftSand</li>
+				<li>Gravel</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>1050~1750</time>
+		<timeModifiers>
+			<li Class="CellAutomato.DistanceTimeModifier">
+				<patchTag>DistanceTimeModifier1</patchTag>
+				<range>8.5</range>
+				<factorCurve>
+					<points>
+						<li>(0.0, 0.1)</li>
+						<li>(2, 0.3)</li>
+						<li>(5, 0.9)</li>
+						<li>(7, 2)</li>
+						<li>(9, 3)</li>
+					</points>
+				</factorCurve>
+				<checker Class="CellAutomato.TerrainChecker">
+					<terrainDefs>
+						<li>WaterOceanDeep</li>
+					</terrainDefs>
+				</checker>
+			</li>
+		</timeModifiers>
+		<conditions>
+			<li Class="CellAutomato.TreeOnTopChecker">
+				<patchTag>TreeOnTopChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>250~100000</valueRange>
+				<swampinessMult>0</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 0)</li>
+									<li>(0.1, 100)</li>
+									<li>(0.5, 600)</li>
+									<li>(1.0, 1200)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterOceanShallow</li>
+							<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>8.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction2</patchTag>
+				<preferredResultTerrainDef>WaterOceanShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Sand</preferredResultUnderTerrainDef>
+			</li>
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions1</patchTag>
+				<range>2.5</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>WaterOceanShallowFluxRule</ruleDef>
+					</li>
+				</actions>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterOceanShallowRefluxRule</defName>
+		<priority>120</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>WaterOceanShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>1050~1750</time>
+		<timeModifiers>
+			<li Class="CellAutomato.DistanceTimeModifier">
+				<patchTag>DistanceTimeModifier1</patchTag>
+				<range>8.5</range>
+				<factorCurve>
+					<points>
+						<li>(0.0, 4)</li>
+						<li>(2, 2)</li>
+						<li>(5, 0.9)</li>
+						<li>(7, 0.3)</li>
+						<li>(9, 0.1)</li>
+					</points>
+				</factorCurve>
+				<checker Class="CellAutomato.TerrainChecker">
+					<terrainDefs>
+						<li>WaterOceanDeep</li>
+					</terrainDefs>
+				</checker>
+			</li>
+		</timeModifiers>
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>0~250</valueRange>
+				<swampinessMult>0</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 0)</li>
+									<li>(0.1, 100)</li>
+									<li>(0.5, 600)</li>
+									<li>(1.0, 1200)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<success>Invert</success>
+						<terrainDefs>
+							<li>WaterOceanShallow</li>
+							<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Invert</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>WaterOceanDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>Sand</preferredResultTerrainDef>
+			</li>
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions1</patchTag>
+				<range>2.5</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>WaterOceanShallowRefluxRule</ruleDef>
+					</li>
+				</actions>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!--do not use now, rainworld planned later-->
+	<!--CellAutomato.TerrainCellRule> 
+		<defName>WaterDeepExpandRule</defName>
+	</CellAutomato.TerrainCellRule-->
+</Defs>

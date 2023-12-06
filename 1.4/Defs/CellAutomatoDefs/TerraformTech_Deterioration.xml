@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+	<!--2 day - 2.8 days-->
+	<CellAutomato.TerrainCellRuleDef Name="BaseRecuperateRule" ParentName="BaseTerrainNaturalRule" Abstract="true"> 
+		<priority>110</priority>
+		<cellSelector Class="CellAutomato.ArtificialTerrainSelector">
+		</cellSelector>
+		<time>72000~100000</time>
+		<timeModifiers>
+			<li Class="CellAutomato.TerrainDeteriorationRateTimeModifier">
+				<patchTag>TerrainDeteriorationRateTimeModifier1</patchTag>
+				<factorCurve>
+					<points>
+						<li>(-1.0, 90.0)</li>
+						<li>(0.0, 20.0)</li>
+						<li>(1.0, 1.0)</li>
+						<li>(2.0, 0.5)</li>
+						<li>(10.0, 0.1)</li>
+						<li>(20.0, 0.05)</li>
+					</points>
+				</factorCurve>
+			</li>
+		</timeModifiers>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!--1 day - 1.5 days-->
+	<CellAutomato.TerrainCellRuleDef Name="BaseFilthRecuperateRule" ParentName="BaseFilthNaturalRule"  Abstract="true"> 
+		<priority>120</priority>
+		<cellSelector Class="CellAutomato.ArtificialTerrainSelector">
+		</cellSelector>
+		<time>36000~50000</time>
+		<timeModifiers>
+			<li Class="CellAutomato.TerrainDeteriorationRateTimeModifier">
+				<patchTag>TerrainDeteriorationRateTimeModifier1</patchTag>
+				<factorCurve>
+					<points>
+						<li>(-1.0, 90.0)</li>
+						<li>(0.0, 20.0)</li>
+						<li>(1.0, 1.0)</li>
+						<li>(2.0, 0.5)</li>
+						<li>(10.0, 0.1)</li>
+						<li>(20.0, 0.05)</li>
+					</points>
+				</factorCurve>
+			</li>
+		</timeModifiers>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- recuperate rules -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseRecuperateRule"> 
+		<defName>RecuperateSoilGround</defName>
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.Counter">
+					<patchTag>Counter1</patchTag>
+					<success>Normal</success>
+					<countRanges>
+						<li>5~6</li>
+					</countRanges>
+					<checker Class="CellAutomato.FilthChecker">
+						<defs>
+							<li>Filth_DirtRecuperating</li>
+							<li>Filth_Dirt</li>
+						</defs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Normal</success>
+					<range>1.1</range>
+					<countRanges>
+						<li>8~25</li>
+					</countRanges>
+					<checker Class="CellAutomato.FilthChecker">
+						<defs>
+							<li>Filth_DirtRecuperating</li>
+							<li>Filth_Dirt</li>
+						</defs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Soil</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseRecuperateRule"> 
+		<defName>RecuperateSandGround</defName>
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.RadiusCounter">
+				<patchTag>RadiusCounter1</patchTag>
+				<success>Normal</success>
+				<range>1.1</range>
+				<countRanges>
+					<li>5~25</li>
+				</countRanges>
+				<checker Class="CellAutomato.FilthChecker">
+					<defs>
+						<li>Filth_Sand</li>
+					</defs>
+				</checker>
+			</li>
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.Counter">
+					<patchTag>Counter1</patchTag>
+					<success>Normal</success>
+					<countRanges>
+						<li>3~6</li>
+					</countRanges>
+					<checker Class="CellAutomato.FilthChecker">
+						<defs>
+							<li>Filth_Sand</li>
+						</defs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Normal</success>
+					<range>1.1</range>
+					<countRanges>
+						<li>5~25</li>
+					</countRanges>
+					<checker Class="CellAutomato.FilthChecker">
+						<defs>
+							<li>Filth_Sand</li>
+						</defs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Sand</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!--scatter filth rules-->
+	<!--todo:speed up with weather conditions-->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseFilthRecuperateRule"> 
+		<defName>ArtTerrSoilFilthCreate</defName>
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.AcceptsFilthChecker">
+				<patchTag>AcceptsFilthChecker1</patchTag>
+				<defs>
+					<li>Filth_DirtRecuperating</li>
+				</defs>
+			</li>
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker>
+						<success>Normal</success>
+						<operation>And</operation>	
+						<subNodes>
+							<li Class="CellAutomato.PlantChecker">
+								<patchTag>PlantChecker1</patchTag>
+								<defs/>
+							</li>
+							<li Class="CellAutomato.FilthSourceChecker">
+								<patchTag>FilthSourceChecker1</patchTag>
+								<defs>
+									<li>Filth_Dirt</li>
+								</defs>
+							</li>
+							<li Class="CellAutomato.PlantContainerChecker">
+								<success>Invert</success>
+								<patchTag>PlantContainerChecker1</patchTag>
+							</li>
+						</subNodes>
+					</checker>
+				</li>
+				<li>
+					<success>Normal</success>
+					<operation>Or</operation>
+					<subNodes>
+						<li Class="CellAutomato.Counter">
+							<patchTag>Counter1</patchTag>
+							<success>Normal</success>
+							<countRanges>
+								<li>1~6</li>
+							</countRanges>
+							<checker Class="CellAutomato.FilthChecker">
+								<defs>
+									<li>Filth_DirtRecuperating</li>
+									<li>Filth_Dirt</li>
+								</defs>
+							</checker>
+						</li>
+						<li Class="CellAutomato.ChanceChecker">
+							<patchTag>ChanceChecker1</patchTag>
+							<chance>0.5</chance>
+						</li>
+					</subNodes>
+				</li>
+			</subNodes>
+		</checker>
+		<failActions>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>ArtTerrSoilFilthCreate</ruleDef>
+				<chance>0.7</chance>
+			</li>
+		</failActions>
+		<actions>
+			<li Class="CellAutomato.PlaceFilthAction">
+				<patchTag>TerrainPlaceFilthAction1</patchTag>
+				<def>Filth_DirtRecuperating</def>
+				<count>1</count>
+			</li>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>ArtTerrSoilFilthCreate</ruleDef>
+			</li>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction2</patchTag>
+				<ruleDef>RecuperateSoilGround</ruleDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseFilthRecuperateRule"> 
+		<defName>ArtTerrSandFilthCreate</defName>
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.AcceptsFilthChecker">
+				<patchTag>AcceptsFilthChecker1</patchTag>
+				<defs>
+					<li>Filth_Sand</li>
+				</defs>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>350~8000</valueRange>
+				<swampinessMult>0</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 0)</li>
+									<li>(0.2, 100)</li>
+									<li>(0.7, 600)</li>
+									<li>(1.2, 1200)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusLosChecker">
+					<patchTag>RadiusLosChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.FilthSourceChecker">
+						<defs>
+							<li>Filth_Sand</li>
+						</defs>
+					</checker>
+				</li>
+				<li>
+					<success>Normal</success>
+					<operation>Or</operation>
+					<subNodes>
+						<li Class="CellAutomato.Counter">
+							<patchTag>Counter1</patchTag>
+							<success>Normal</success>
+							<countRanges>
+								<li>1~6</li>
+							</countRanges>
+							<checker Class="CellAutomato.FilthChecker">
+								<defs>
+									<li>Filth_Sand</li>
+								</defs>
+							</checker>
+						</li>
+						<li Class="CellAutomato.ChanceChecker">
+							<patchTag>ChanceChecker1</patchTag>
+							<chance>0.65</chance>
+						</li>
+					</subNodes>
+				</li>
+			</subNodes>
+		</checker>
+		<failActions>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>ArtTerrSandFilthCreate</ruleDef>
+				<chance>0.7</chance>
+			</li>
+		</failActions>
+		<actions>
+			<li Class="CellAutomato.PlaceFilthAction">
+				<patchTag>TerrainPlaceFilthAction1</patchTag>
+				<def>Filth_Sand</def>
+				<count>1</count>
+			</li>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>ArtTerrSandFilthCreate</ruleDef>
+			</li>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction2</patchTag>
+				<ruleDef>RecuperateSandGround</ruleDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!--deteriorate roof rule-->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseNaturalRule"> 
+		<defName>RoofDeteriorate</defName>
+		<priority>111</priority>
+		<cellSelector Class="CellAutomato.AnyTerrainSelector" />
+		<time>12000~15000</time>
+		<timeModifiers>
+			<li Class="CellAutomato.DistanceTimeModifier">
+				<patchTag>CountTimeModifier1</patchTag>
+				<range>1.5</range>
+				<factorCurve>
+					<points>
+						<li>(0.0, 1.0)</li>
+						<li>(1.0, 1.05)</li>
+						<li>(2.0, 1.5)</li>
+						<li>(10.0, 2.8)</li>
+						<li>(20.0, 4)</li>
+					</points>
+				</factorCurve>
+				<checker Class="CellAutomato.RoofedChecker">
+					<patchTag>RoofedChecker1</patchTag>
+				</checker>
+			</li>
+			<li Class="CellAutomato.DistanceTimeModifier">
+				<patchTag>DistanceTimeModifier1</patchTag>
+				<range>10.5</range>
+				<factorCurve>
+					<points>
+						<li>(0.0, 3)</li>
+						<li>(1.0, 1.5)</li>
+						<li>(2.0, 0.25)</li>
+						<li>(10.0, 0.05)</li>
+					</points>
+				</factorCurve>
+				<checker Class="CellAutomato.RoofSupportChecker">
+					<patchTag>RoofSupportChecker1</patchTag>
+				</checker>
+			</li>
+		</timeModifiers>
+		<conditions>
+			<!--30% chance to even check a roofed tile-->
+			<li Class="CellAutomato.ChanceChecker">
+				<patchTag>ChanceChecker1</patchTag>
+				<chance>0.5</chance>
+			</li>
+			<li Class="CellAutomato.RoofedChecker">
+				<patchTag>RoofedChecker1</patchTag>
+			</li>
+		</conditions>
+		<checker>
+			<!-- nearby cell nust be unroofed -->
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.RoofedChecker">
+						<success>Invert</success>
+						<patchTag>RoofedChecker1</patchTag>
+					</checker>
+				</li>
+				<!-- nearby celll must not be near room and over building -->
+				<!-- if there is no (room[nearby] and building underneath) then collapse is possible -->
+				<!-- crypt protection -->
+				<li>
+					<success>Invert</success>
+					<operation>And</operation>
+					<subNodes>
+						<li Class="CellAutomato.RadiusChecker">
+							<patchTag>RadiusChecker1</patchTag>
+							<mode>Single</mode>
+							<range>1.5</range>
+							<checker Class="CellAutomato.RoomChecker"/>
+						</li>
+						<li Class="CellAutomato.BuildingChecker">
+							<patchTag>BuildingChecker1</patchTag>
+							<traversability>
+							  <li>Impassable</li>
+							</traversability>
+						</li>
+					</subNodes>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.DropRoofAction">
+				<patchTag>DropRoofAction1</patchTag>
+			</li>
+			
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions1</patchTag>
+				<range>2.1</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>BuildingDeteriorate</ruleDef>
+					</li>
+				</actions>
+			</li>
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions2</patchTag>
+				<range>1.5</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>RoofDeteriorate</ruleDef>
+					</li>
+				</actions>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+
+	<!-- impassable buildings -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseNaturalRule"> 
+		<defName>StructureDeteriorate</defName>
+		<priority>112</priority>
+		<cellSelector Class="CellAutomato.AnyTerrainSelector" />
+		<time>2400~7200</time>
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+			</li>
+			<li Class="CellAutomato.RadiusChecker">
+				<patchTag>RadiusChecker1</patchTag>
+				<mode>Single</mode>
+				<range>1.5</range>
+				<checker Class="CellAutomato.NaturalTerrainChecker"/>
+			</li>
+			<li Class="CellAutomato.RoofedChecker">
+				<patchTag>RoofedChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusChecker">
+			<success>Normal</success>
+			<mode>Single</mode>
+			<range>2.5</range>
+			<checker>
+				<success>Normal</success>
+				<operation>And</operation>
+				<subNodes>
+					<!-- outdoors not potted plant -->
+					<li Class="CellAutomato.RoomChecker">
+						<success>Invert</success>
+						<patchTag>RoomChecker1</patchTag>
+					</li>
+					<li Class="CellAutomato.PlantDefChecker">
+						<patchTag>PlantDefChecker1</patchTag>
+						<defs/>
+					</li>
+					<li Class="CellAutomato.PlantContainerChecker">
+						<success>Invert</success>
+						<patchTag>PlantContainerChecker1</patchTag>
+					</li>
+				</subNodes>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.DeteriorateBuildingAction">
+				<patchTag>DeteriorateBuildingAction1</patchTag>
+				<power>1</power>
+			</li>
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions1</patchTag>
+				<range>1.5</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>StructureDeteriorate</ruleDef>
+					</li>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction2</patchTag>
+						<ruleDef>BuildingDeteriorate</ruleDef>
+					</li>
+				</actions>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- passable buildings - doors, etc -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseNaturalRule"> 
+		<defName>BuildingDeteriorate</defName>
+		<priority>113</priority>
+		<cellSelector Class="CellAutomato.AnyTerrainSelector" />
+		<time>7500~9600</time>
+		<conditions><conditions>
+		</conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+				<traversability>
+				  <li>Standable</li>
+				  <li>PassThroughOnly</li>
+				</traversability>
+			</li>
+			<li Class="CellAutomato.RadiusChecker">
+				<patchTag>RadiusChecker1</patchTag>
+				<mode>Single</mode>
+				<range>1.5</range>
+				<checker Class="CellAutomato.NaturalTerrainChecker"/>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusChecker">
+			<success>Normal</success>
+			<mode>Single</mode>
+			<range>2.5</range>
+			<checker>
+				<success>Normal</success>
+				<operation>And</operation>
+				<subNodes>
+					<li Class="CellAutomato.NaturalTerrainChecker">
+						<patchTag>NaturalTerrainChecker1</patchTag>
+					</li>
+					<li Class="CellAutomato.PlantDefChecker">
+						<patchTag>PlantDefChecker1</patchTag>
+						<defs/>
+					</li>
+					<li Class="CellAutomato.PlantContainerChecker">
+						<success>Invert</success>
+						<patchTag>PlantContainerChecker1</patchTag>
+					</li>
+				</subNodes>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.DeteriorateBuildingAction">
+				<patchTag>DeteriorateBuildingAction1</patchTag>
+				<power>3</power>
+			</li>
+			<li Class="CellAutomato.RadiusActions">
+				<patchTag>RadiusActions1</patchTag>
+				<range>1.5</range>
+				<actions>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction1</patchTag>
+						<ruleDef>StructureDeteriorate</ruleDef>
+					</li>
+					<li Class="CellAutomato.AssignRuleAction">
+						<patchTag>AssignRuleAction2</patchTag>
+						<ruleDef>BuildingDeteriorate</ruleDef>
+					</li>
+				</actions>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+</Defs>

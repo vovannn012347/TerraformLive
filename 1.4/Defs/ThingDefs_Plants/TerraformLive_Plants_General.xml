@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef ParentName="PlantBase">
+    <defName>Plant_Lichen</defName>
+    <label>lichen plant</label>
+    <description>A composite organism consisting of a fungus and a photosynthetic partner, often an alga or a cyanobacterium, living in a mutualistic relationship. Can be harvested for fungus.</description>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Nutrition>0.65</Nutrition>
+    </statBases>
+    <graphicData>
+      <texPath>TerraformTech/Things/Plant/LichenPlant</texPath>
+      <graphicClass>Graphic_Random</graphicClass>
+      <color>(150, 144, 141)</color>
+      <flipExtraRotation>75</flipExtraRotation>
+    </graphicData>
+    <selectable>true</selectable>
+    <pathCost>2</pathCost>
+    <ingestible />
+    <plant>
+      <fertilitySensitivity>0.1</fertilitySensitivity>
+      <dieIfLeafless>false</dieIfLeafless>
+      <harvestTag>Standard</harvestTag>
+      <harvestedThingDef>RawFungus</harvestedThingDef>
+      <harvestYield>8</harvestYield>
+      <neverBlightable>true</neverBlightable>
+      <topWindExposure>0.05</topWindExposure>
+      <growDays>15</growDays>
+      <visualSizeRange>0.3~1.00</visualSizeRange>
+      <wildOrder>2</wildOrder>
+      <purpose>Food</purpose>
+      <pollution>Any</pollution>
+    </plant>
+  </ThingDef>
+  
+</Defs>

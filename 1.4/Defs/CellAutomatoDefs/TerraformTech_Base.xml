@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+	<CellAutomato.TerrainCellRuleDef Name="BaseNaturalRule" Abstract="true"> 
+		<isNatural>true</isNatural>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseTerrainNaturalRule" ParentName="BaseNaturalRule" Abstract="true"> 
+		<layer>Terrain</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BasePlantNaturalRule" ParentName="BaseNaturalRule" Abstract="true"> 
+		<layer>Plant</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseFilthNaturalRule" ParentName="BaseNaturalRule" Abstract="true"> 
+		<layer>Filth</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseBuildingNaturalRule" ParentName="BaseNaturalRule" Abstract="true"> 
+		<layer>Building</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseTerrainRule" Abstract="true"> 
+		<layer>Terrain</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BasePlantRule" Abstract="true"> 
+		<layer>Plant</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseFilthRule" Abstract="true"> 
+		<layer>Filth</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseBuildingRule" Abstract="true"> 
+		<layer>Building</layer>
+	</CellAutomato.TerrainCellRuleDef> 
+	
+</Defs>

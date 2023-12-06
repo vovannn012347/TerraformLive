@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+		
+	<CellAutomato.TerrainCellRuleDef ParentName="BasePlantNaturalRule"> 
+		<defName>LichenSpawnPlantRule</defName>
+		<priority>141</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>MossyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>30000~40000</time><!-- 0.5-1.5 days -->
+		<conditions>
+			<li Class="CellAutomato.SunExposedChecker">
+				<patchTag>SunExposedChecker1</patchTag>
+			</li>
+			<li Class="CellAutomato.FertilityChecker">
+				<patchTag>FertilityChecker1</patchTag>
+			</li>
+			<li Class="CellAutomato.SpawnPlantChecker">
+				<patchTag>SpawnPlantChecker1</patchTag>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-1000~15000</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li>
+					<success>Normal</success>
+					<operation>Or</operation>
+					<subNodes>
+						<li Class="CellAutomato.ChanceChecker">
+							<patchTag>ChanceChecker1</patchTag>
+							<chance>0.04</chance>
+						</li>
+						<li Class="CellAutomato.RadiusChecker">
+							<patchTag>RadiusChecker1</patchTag>
+							<success>Normal</success>
+							<mode>Single</mode>
+							<range>1.5</range>
+							<checker Class="CellAutomato.PlantChecker">
+								<defs>
+									<li>Plant_Lichen</li>
+								</defs>
+							</checker>
+						</li>
+					</subNodes>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Invert</success>
+					<range>1.5</range>
+					<countRanges>
+						<li>7~10</li>
+					</countRanges>
+					<checker Class="CellAutomato.PlantAndRuleChecker">
+						<plantDefs>
+							<li>Plant_Lichen</li>
+						</plantDefs>
+						<ruleDefs>
+							<li>LichenSpawnPlantRule</li>
+						</ruleDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.SpawnPlantAction">
+				<patchTag>SpawnPlantAction1</patchTag>
+				<plantDef>Plant_Lichen</plantDef>
+				<growthInitial>0.01</growthInitial>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef Name="BaseCavePlantRule" ParentName="BasePlantNaturalRule" Abstract="true"> 
+		<time>35000~42000</time>
+		<!-- adds actual rock terrains to terrain selection-->
+		<cellSelector Class="CellAutomato.NaturalRockTerrainSelector">
+			<!--additional terrains -->
+			<terrainDefs>
+				<li>Gravel</li>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.SunExposedChecker">
+				<patchTag>SunExposedChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SpawnPlantChecker">
+				<patchTag>SpawnPlantChecker1</patchTag>
+				<success>Normal</success>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-1000~15000</valueRange>
+				<swampinessMult>600</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.4</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor/>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseCavePlantRule"> 
+		<defName>AgariluxSpawnRule</defName>
+		<priority>141</priority>
+		<time>28000~35000</time>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>4.5</range>
+					<checker Class="CellAutomato.PlantChecker">
+						<defs>
+							<li>Agarilux</li>
+						</defs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Invert</success>
+					<mode>Single</mode>
+					<range>2.1</range>
+					<checker Class="CellAutomato.PlantAndRuleChecker">
+						<plantDefs>
+							<li>Agarilux</li>
+						</plantDefs>
+						<ruleDefs>
+							<li>AgariluxSpawnRule</li>
+						</ruleDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.SpawnPlantAction">
+				<patchTag>SpawnPlantAction1</patchTag>
+				<plantDef>Agarilux</plantDef>
+				<growthInitial>0.01</growthInitial>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseCavePlantRule"> 
+		<defName>GlowstoolSpawnRule</defName>
+		<priority>142</priority>
+		<checker>
+			<success>Normal</success>
+			<operation>Or</operation>
+			<subNodes>
+				<li>
+					<success>Normal</success>
+					<operation>And</operation>
+					<subNodes>
+						<li Class="CellAutomato.RadiusChecker">
+							<patchTag>RadiusChecker1</patchTag>
+							<success>Normal</success>
+							<mode>Single</mode>
+							<range>1.5</range>
+							<checker Class="CellAutomato.PlantChecker">
+								<defs>
+									<li>Glowstool</li>
+								</defs>
+							</checker>
+						</li>
+						<li Class="CellAutomato.RadiusCounter">
+							<patchTag>RadiusCounter1</patchTag>
+							<success>Normal</success>				
+							<range>2.6</range>
+							<countRanges>
+								<li>1~3</li>
+							</countRanges>
+							<checker Class="CellAutomato.PlantChecker">
+								<defs>
+									<li>Glowstool</li>
+								</defs>
+							</checker>
+						</li>
+					</subNodes>
+				</li>
+				<li>
+					<success>Normal</success>
+					<operation>And</operation>
+					<subNodes>
+						<li Class="CellAutomato.RadiusChecker">
+							<patchTag>RadiusChecker1</patchTag>
+							<success>Invert</success>
+							<mode>Single</mode>
+							<range>1.5</range>
+							<checker Class="CellAutomato.PlantAndRuleChecker">
+								<plantDefs>
+									<li>Glowstool</li>
+								</plantDefs>
+								<ruleDefs>
+									<li>GlowstoolSpawnRule</li>
+								</ruleDefs>
+							</checker>
+						</li>
+						<li Class="CellAutomato.RadiusChecker">
+							<patchTag>RadiusChecker1</patchTag>
+							<success>Normal</success>
+							<mode>Single</mode>
+							<range>2.6</range>
+							<checker Class="CellAutomato.PlantChecker">
+								<defs>
+									<li>Glowstool</li>
+								</defs>
+							</checker>
+						</li>
+					</subNodes>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.SpawnPlantAction">
+				<patchTag>SpawnPlantAction1</patchTag>
+				<plantDef>Glowstool</plantDef>
+				<growthInitial>0.01</growthInitial>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseCavePlantRule"> 
+		<defName>BryoluxSpawnRule</defName>
+		<priority>143</priority>
+		<time>9000~19000</time>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.67</chance>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.PlantChecker">
+						<defs>
+							<li>Bryolux</li>
+						</defs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Normal</success>						
+					<range>2.1</range>
+					<countRanges>
+						<li>1~5</li>
+					</countRanges>
+					<checker Class="CellAutomato.PlantAndRuleChecker">
+						<plantDefs>
+							<li>Bryolux</li>
+						</plantDefs>
+						<ruleDefs>
+							<li>BryoluxSpawnRule</li>
+						</ruleDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.SpawnPlantAction">
+				<patchTag>SpawnPlantAction1</patchTag>
+				<plantDef>Bryolux</plantDef>
+				<growthInitial>0.01</growthInitial>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+</Defs>

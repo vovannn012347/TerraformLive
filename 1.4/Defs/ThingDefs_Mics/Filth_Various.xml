@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef Name="CellBaseFilth" Abstract="True">
+    <thingClass>Filth</thingClass>
+    <category>Filth</category>
+    <altitudeLayer>Filth</altitudeLayer>
+    <useHitPoints>false</useHitPoints>
+    <drawerType>MapMeshOnly</drawerType>
+    <graphicData>
+      <graphicClass>Graphic_Cluster</graphicClass>
+      <shaderType>Transparent</shaderType>
+    </graphicData>
+    <statBases>
+      <Beauty>-15</Beauty>
+      <Cleanliness>-5</Cleanliness>
+    </statBases>
+    <filth>
+      <cleaningSound>Interact_CleanFilth</cleaningSound>
+    </filth>
+  </ThingDef>
+
+      <!--color>(91,75,65,97)</color-->
+  <ThingDef ParentName="CellBaseFilth">
+    <defName>Filth_DirtRecuperating</defName>
+    <label>dirt recuperating</label>
+    <graphicData>
+      <texPath>Things/Filth/Grainy</texPath>
+      <color>(75, 91, 65, 97)</color>
+    </graphicData>
+    <statBases>
+      <Beauty>-5</Beauty>
+      <Cleanliness>-1</Cleanliness>
+    </statBases>
+    <filth>
+      <placementMask>
+        <li>Terrain</li>
+      </placementMask>
+      <disappearsInDays>45~50</disappearsInDays>
+      <rainWashes>false</rainWashes>
+      <cleaningWorkToReduceThickness>60</cleaningWorkToReduceThickness>
+      <canFilthAttach>false</canFilthAttach>
+      <cleaningSound>Interact_CleanFilth_Dirt</cleaningSound>
+    </filth>
+  </ThingDef>
+
+</Defs>

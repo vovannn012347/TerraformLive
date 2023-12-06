@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	
+	<!-- Ocean water flux rule -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>RichSoilExpandRule</defName>
+		<priority>130</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Soil</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>30000~90000</time><!-- 0.5-1.5 days -->
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">	
+				<patchTag>BuildingChecker1</patchTag>			
+				<traversability>
+				  <li>Impassable</li>
+				</traversability>
+				<success>Invert</success>
+			</li>
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>SoilRich</li>
+							<li>Mud</li>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>6.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Mud</li>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>SoilRich</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>Soil</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>RichSoilDepleteRule</defName>
+		<priority>130</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>SoilRich</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>840000~960000</time><!-- 14-16 days -->
+		<conditions>
+			<li Class="CellAutomato.PlantPurposeChecker">
+				<patchTag>PlantPurposeChecker1</patchTag>	
+				<plantPurpose>
+					<li>Food</li>
+					<li>Health</li> 
+				</plantPurpose>
+			</li>
+		</conditions>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Soil</preferredResultTerrainDef>
+			</li>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>RichSoilReEmergeRule</ruleDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainRule"> 
+		<defName>RichSoilReEmergeRule</defName>
+		<isNatural>false</isNatural>
+		<priority>131</priority>
+		<cellSelector/>
+		<time>60000~90000</time><!-- 1-1.5 days -->
+		<conditions/>
+		<checker>
+			<success>Normal</success>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.PlantPurposeChecker">
+					<patchTag>PlantPurposeChecker1</patchTag>	
+					<success>Invert</success>
+					<plantPurpose>
+						<li>Food</li>
+						<li>Health</li> 
+					</plantPurpose>
+				</li>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.4</chance>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>SoilRich</preferredResultTerrainDef>
+			</li>
+		</actions>
+		<failActions>
+			<li Class="CellAutomato.AssignRuleAction">
+				<patchTag>AssignRuleAction1</patchTag>
+				<ruleDef>RichSoilReEmergeRule</ruleDef>
+			</li>
+		</failActions>
+	</CellAutomato.TerrainCellRuleDef>
+
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>LichenExpandRule</defName>
+		<priority>140</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>30000~60000</time><!-- 0.5-1.5 days -->
+		<conditions>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>	
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SunExposedChecker">
+				<patchTag>SunExposedChecker1</patchTag>	
+			</li>			
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>	
+				<valueRange>-1500~11000</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>				
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>MossyTerrain</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Mud</li>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>MossyTerrain</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>LichenDieRuleBadCondition</defName>
+		<priority>140</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>MossyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>30000~45000</time><!-- 0.5-1.5 days -->
+		
+		<conditionsSuccess>Normal</conditionsSuccess>
+		<conditionsMode>Or</conditionsMode>
+		<conditions>
+			<li Class="CellAutomato.SunExposedChecker">
+				<patchTag>SunExposedChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.BuildingChecker">
+				<patchTag>BuildingChecker1</patchTag>
+			</li>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<success>Invert</success>
+				<valueRange>-3000~100000</valueRange>
+				<swampinessMult>500</swampinessMult>
+				<pollutionMult>0</pollutionMult>
+				<avgTempMult>0</avgTempMult>
+				<elevationMult>0</elevationMult>
+				<rainfallMult>0.5</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>	
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<success>Invert</success>
+						<terrainDefs>
+							<li>MossyTerrain</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker2</patchTag>
+					<success>Invert</success>
+					<mode>Single</mode>
+					<range>3.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Mud</li>
+							<li>WaterShallow</li>
+							<li>WaterDeep</li>
+							<li>WaterMovingShallow</li>
+							<li>WaterMovingChestDeep</li>
+						</terrainDefs>
+					</checker>
+				</li>	
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Soil</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	
+</Defs>

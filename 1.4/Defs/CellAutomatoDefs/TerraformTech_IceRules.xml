@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterFreezeRule</defName>
+		<priority>120</priority>		
+		<time>3500~12000</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>WaterDeep</li>
+				<li>WaterShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-2147483647~0</valueRange>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-2, -100)</li>
+									<li>(-1, -100)</li>
+									<li>(0, 0)</li>
+									<li>(1, 100)</li>
+									<li>(2, 100)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainTagChecker">
+						<success>Invert</success>
+						<tags>
+							<li>Water</li>
+						</tags>
+					</checker>
+				</li>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.0013</chance>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainPlaceOnTopAction">
+				<patchTag>TerrainPlaceOnTopAction1</patchTag>
+				<preferredResultTerrainDef>Ice</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterHardFreezeRule</defName>
+		<priority>120</priority>		
+		<time>3500~12000</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>Marsh</li>
+				<li>WaterMovingChestDeep</li>
+				<li>WaterMovingShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-2147483647~0</valueRange>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-20, -100)</li>
+									<li>(-19, -100)</li>
+									<li>(-18, 0)</li>
+									<li>(-17, 100)</li>
+									<li>(-17, 100)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainTagChecker">
+						<success>Invert</success>
+						<tags>
+							<li>Water</li>
+						</tags>
+					</checker>
+				</li>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.0013</chance>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainPlaceOnTopAction">
+				<patchTag>TerrainPlaceOnTopAction1</patchTag>
+				<preferredResultTerrainDef>Ice</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterOceanFreezeRule</defName>
+		<priority>120</priority>		
+		<time>3500~12000</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>WaterOceanDeep</li>
+				<li>WaterOceanShallow</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>-2147483647~0</valueRange>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-34, -100)</li>
+									<li>(-33, -100)</li>
+									<li>(-32, 0)</li>
+									<li>(-31, 100)</li>
+									<li>(-30, 100)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>1.5</range>
+					<checker Class="CellAutomato.TerrainTagChecker">
+						<success>Invert</success>
+						<tags>
+							<li>Water</li>
+						</tags>
+					</checker>
+				</li>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.00078</chance>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainPlaceOnTopAction">
+				<patchTag>TerrainPlaceOnTopAction1</patchTag>
+				<preferredResultTerrainDef>Ice</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>WaterUnfreezeRule</defName>
+		<priority>130</priority>		
+		<time>3500~12000</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>Ice</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.TileInfoChecker">
+				<patchTag>TileInfoChecker1</patchTag>
+				<valueRange>0~2147483647</valueRange>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-1, -100)</li>
+									<li>(-1, -100)</li>
+									<li>(0, 0)</li>
+									<li>(1, 100)</li>
+									<li>(1, 100)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker />
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>WaterShallow</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>WaterDeep</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+</Defs>

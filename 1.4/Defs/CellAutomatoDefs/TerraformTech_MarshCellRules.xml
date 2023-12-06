@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	
+	<!-- first: rules are matched by applied terrain or by terrainSelector -->
+	<!-- cell rules checked in order of increasing priority - from least to highest -->
+	<!-- first rule to commence action is applied, rest is discarded-->
+	
+	<!-- Marsh -->
+	
+	<!-- die rule: non-swamp dry area -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshDieRuleDry</defName>
+		<priority>90</priority>		
+		<!-- used to identify terrain cell to apply to -->
+		<time>2500~4100</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>Marsh</li>
+			</terrainDefs>
+		</cellSelector>
+		<!-- rule is active and checked at all of these checkers returning true -->
+		<conditions>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>-100000~500</valueRange>
+				<!-- possible values checked: -->
+				<!-- swampinessMult -->
+				<!-- rainfallMult -->
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<!-- values from world tile are multiplied and summarized -->
+				<!-- and then are modified by following value modifiers in list order -->
+				<valueModifiers>
+					<!-- evaluated in list order -->
+					<li Class="CellAutomato.WeatherModfier">
+						<!-- first wind then rainfall then temperature-->
+						<!-- wind does not affect indoors and rain does not affect roofed areas -->
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.ChanceChecker">
+					<!-- or just dry out anyway with certain chance -->
+					<patchTag>ChanceChecker1</patchTag>
+					<chance>0.3</chance>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Invert</success>	
+					<range>1.5</range>
+					<countRanges>
+						<li>0~0</li>
+						<li>2~3</li>
+					</countRanges>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Marsh</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>MarshyTerrain</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- die rule: non-swamp -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshDieRuleNonSwamp</defName>
+		<priority>90</priority>			
+		<time>2500~4100</time>
+		<cellSelector>
+			<terrainDefs>
+				<li>Marsh</li>
+			</terrainDefs>
+		</cellSelector>
+		<conditions>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>500~1300</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusCounter">
+			<patchTag>RadiusCounter1</patchTag>
+			<success>Invert</success>	
+			<range>1.5</range>
+			<countRanges>
+				<li>0~0</li>
+				<li>2~3</li>
+			</countRanges>
+			<checker Class="CellAutomato.TerrainChecker">
+				<terrainDefs>
+					<li>Marsh</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>MarshyTerrain</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+		
+	<!-- die rule: swamp -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshDieRuleSwamp</defName>
+		<priority>90</priority>		
+		<cellSelector>
+			<terrainDefs>
+				<li>Marsh</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>2500~4100</time>
+		<conditions>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>1301~2147483647</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusCounter">
+			<patchTag>RadiusCounter1</patchTag>
+			<success>Normal</success>
+			<range>2.3</range>
+			<countRanges>
+				<li>15~21</li>
+			</countRanges>
+			<checker Class="CellAutomato.TerrainChecker">
+				<terrainDefs>
+					<li>Marsh</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>MarshyTerrain</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- expand rule: swamp -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshExpandRule</defName>
+		<priority>90</priority>		
+		<cellSelector>
+			<terrainDefs>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>4000~7600</time>
+		<conditions>
+			<li Class="CellAutomato.PlantChecker">
+				<patchTag>PlantChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>2050~2147483647</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusCounter">
+			<patchTag>RadiusCounter1</patchTag>
+			<success>Normal</success>
+			<range>1.5</range>
+			<countRanges>
+				<li>1~3</li>
+			</countRanges>
+			<checker Class="CellAutomato.TerrainChecker">
+				<terrainDefs>
+					<li>Marsh</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Marsh</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- create rule: marsh proliferation in rain -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshCreateRule</defName>
+		<priority>89</priority>
+		<cellSelector>
+			<terrainDefs>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>2000~2600</time>
+		<conditions>
+			<li Class="CellAutomato.PlantChecker">
+				<patchTag>PlantChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>1500~2147483647</valueRange>
+				<swampinessMult>1</swampinessMult>
+				<rainfallMult>0.35</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 0)</li>
+									<li>(1, 3)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.ChanceChecker">
+			<patchTag>ChanceChecker1</patchTag>
+			<chance>0.12</chance>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>Marsh</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- Marshy terrain -->
+	<!-- die rule: non-swamp dry area -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshyTerrainDieRuleDry</defName>
+		<priority>91</priority>	
+		<cellSelector>
+			<terrainDefs>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>	
+		<time>1600~3100</time>
+		<conditions>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>-100000~500</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<operation>Or</operation>
+			<subNodes>
+				<li Class="CellAutomato.ChanceChecker">
+					<patchTag>ChanceChecker2</patchTag>
+					<chance>0.3</chance>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Invert</success>
+					<range>1.5</range>
+					<countRanges>
+						<li>2~3</li>
+						<li>6~7</li>
+					</countRanges>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Marsh</li>
+							<li>MarshyTerrain</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>SoilRich</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- die rule: non-swamp -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshyTerrainDieRuleNoswamp</defName>
+		<priority>100</priority>		
+		<cellSelector>
+			<terrainDefs>
+				<li>MarshyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>3600~5100</time>
+		<conditions>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>500~1500</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusCounter">
+			<patchTag>RadiusCounter1</patchTag>
+			<success>Invert</success>
+			<range>1.5</range>
+			<countRanges>
+				<li>2~3</li>
+				<li>5~9</li>
+			</countRanges>
+			<checker Class="CellAutomato.TerrainChecker">
+				<terrainDefs>
+					<li>Marsh</li>
+					<li>MarshyTerrain</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainRemoveAction">
+				<patchTag>TerrainRemoveAction1</patchTag>
+				<preferredResultTerrainDef>SoilRich</preferredResultTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<!-- die rule: swamp -->
+	<!-- what do you expect? in swamp marshy soil does not dry naturally :) -->
+	
+	<!-- expand rule: non-dry area, non-swamp -->
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshyTerrainExpandRule</defName>
+		<priority>100</priority>		
+		<cellSelector>
+			<terrainDefs>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>2400~4700</time>
+		<conditions>
+			<li Class="CellAutomato.PlantChecker">
+				<patchTag>PlantChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>770~2049</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker>
+			<success>Normal</success>
+			<operation>And</operation>
+			<subNodes>
+				<li Class="CellAutomato.RadiusChecker">
+					<patchTag>RadiusChecker1</patchTag>
+					<success>Normal</success>
+					<mode>Single</mode>
+					<range>2.5</range>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Marsh</li>
+						</terrainDefs>
+					</checker>
+				</li>
+				<li Class="CellAutomato.RadiusCounter">
+					<patchTag>RadiusCounter1</patchTag>
+					<success>Normal</success>
+					<range>1.5</range>
+					<countRanges>
+						<li>1~3</li>
+					</countRanges>
+					<checker Class="CellAutomato.TerrainChecker">
+						<terrainDefs>
+							<li>Marsh</li>
+							<li>MarshyTerrain</li>
+						</terrainDefs>
+					</checker>
+				</li>
+			</subNodes>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>MarshyTerrain</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+	<CellAutomato.TerrainCellRuleDef ParentName="BaseTerrainNaturalRule"> 
+		<defName>MarshyTerrainExpandRuleSwamp</defName>
+		<priority>100</priority>		
+		<cellSelector>
+			<terrainDefs>
+				<li>Soil</li>
+				<li>SoilRich</li>
+				<li>MossyTerrain</li>
+			</terrainDefs>
+		</cellSelector>
+		<time>2400~4700</time>
+		<conditions>
+			<li Class="CellAutomato.PlantChecker">
+				<patchTag>PlantChecker1</patchTag>
+				<success>Invert</success>
+			</li>
+			<li Class="CellAutomato.SwampinessChecker">
+				<patchTag>SwampinessChecker1</patchTag>
+				<valueRange>2050~2147483647</valueRange>
+				<swampinessMult>4</swampinessMult>
+				<rainfallMult>0.25</rainfallMult>
+				<valueModifiers>
+					<li Class="CellAutomato.WeatherModfier">
+						<windFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0.0, 1)</li>
+									<li>(0.3, 0.9)</li>
+									<li>(1, 0.8)</li>
+									<li>(1.5, 0.7)</li>
+									<li>(2, 0.6)</li>
+								</points>
+							</factorCurve>
+						</windFactor>
+						<rainFactor>
+							<type>Multiply</type>
+							<factorCurve>
+								<points>
+									<li>(0, 1)</li>
+									<li>(1, 2)</li>
+								</points>
+							</factorCurve>
+						</rainFactor>
+						<temperatureFactor>
+							<type>Add</type>
+							<factorCurve>
+								<points>
+									<li>(-50, -10000)</li>
+									<li>(-20, -5000)</li>
+									<li>(0, -1200)</li>
+									<li>(18, -400)</li>
+									<li>(21, 0)</li>
+									<li>(24, -400)</li>
+									<li>(44, -1000)</li>
+									<li>(74, -4000)</li>
+								</points>
+							</factorCurve>
+						</temperatureFactor>
+					</li>
+				</valueModifiers>
+			</li>
+		</conditions>
+		<checker Class="CellAutomato.RadiusCounter">
+			<patchTag>RadiusCounter1</patchTag>
+			<success>Normal</success>
+			<range>1.5</range>
+			<countRanges>
+				<li>1~3</li>
+			</countRanges>
+			<checker Class="CellAutomato.TerrainChecker">
+				<terrainDefs>
+					<li>Marsh</li>
+					<li>MarshyTerrain</li>
+				</terrainDefs>
+			</checker>
+		</checker>
+		<actions>
+			<li Class="CellAutomato.TerrainReplaceAction">
+				<patchTag>TerrainReplaceAction1</patchTag>
+				<preferredResultTerrainDef>MarshyTerrain</preferredResultTerrainDef>
+				<preferredResultUnderTerrainDef>SoilRich</preferredResultUnderTerrainDef>
+			</li>
+		</actions>
+	</CellAutomato.TerrainCellRuleDef>
+	
+</Defs>
